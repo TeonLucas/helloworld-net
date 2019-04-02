@@ -13,7 +13,6 @@ function set_env() {
     }
     Foreach ($line in (Get-Content -path $envFile | Where {$_ -notmatch '^#.*'})) {
         $var = $line.Split('=')
-        Write-Host "Setting: $($var)"
         [Environment]::SetEnvironmentVariable($var[0], $var[1], "Process")
     }
     if ([string]::IsNullOrEmpty($env:NEW_RELIC_LICENSE_KEY)) {
