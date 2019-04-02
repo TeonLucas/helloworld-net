@@ -1,5 +1,5 @@
 # helloworld-net
-Hello World app for .NET framework from the Microsoft [Hello World](https://docs.microsoft.com/en-us/visualstudio/get-started/csharp/tutorial-wpf) tutorial.  It assumes you are on a Windows machine.
+Example app for .NET framework from the Microsoft [Hello World](https://docs.microsoft.com/en-us/visualstudio/get-started/csharp/tutorial-wpf) tutorial.  It assumes you are on a Windows machine.
 
 ## Monitoring setup
 In addition there is an install script for New Relic monitoring, for both Windows infrastructure and the .NET application.
