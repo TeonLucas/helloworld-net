@@ -1,3 +1,4 @@
 newrelic.env
 HelloWpfApp/.vs
-HelloWpfApp/bin
+HelloWpfApp/HelloWpfApp/bin
+HelloWpfApp/HelloWpfApp/obj
