@@ -1,10 +1,15 @@
 # Variables
-$msiUrl = "https://download.newrelic.com/infrastructure_agent/windows/"
-$msiFile = "newrelic-infra.msi"
-$msiFullUrl = $msiUrl + $msiFile
-$msiPath = "c:\temp\"
-$msiFullPath = $msiPath + $msiFile
+$infraUrl = "https://download.newrelic.com/infrastructure_agent/windows/"
+$infraFile = "newrelic-infra.msi"
+$dotnetUrl = "https://download.newrelic.com/dot_net_agent/latest_release/"
+$dotnetFile = "NewRelicDotNetAgent_x64.msi"
+$dlPath = "c:\temp\"
 $envFile = "newrelic.env"
+
+$infraFullUrl = $infraUrl + $infraFile
+$infraFullPath = $dlPath + $infraFile
+$dotnetFullUrl = $dotnetUrl + $dotnetFile
+$dotnetFullPath = $dlPath + $dotnetFile
 
 function set_env() {
     if (!(Test-Path -path $envFile)) {
@@ -13,7 +18,7 @@ function set_env() {
     }
     Foreach ($line in (Get-Content -path $envFile | Where {$_ -notmatch '^#.*'})) {
         $var = $line.Split('=')
-        [Environment]::SetEnvironmentVariable($var[0], $var[1], "Process")
+        [Environment]::SetEnvironmentVariable($var[0], $var[1], "Machine")
     }
     if ([string]::IsNullOrEmpty($env:NEW_RELIC_LICENSE_KEY)) {
         Write-Host "Env var NEW_RELIC_LICENSE_KEY must be set"
@@ -31,8 +36,12 @@ function is_admin() {
 }
 
 function download_files(){
-    Write-Host "Downloading New Relic Windows Agent"
-    $dl = Invoke-WebRequest -uri $msiFullUrl -outfile $msiFullPath
+    Write-Host "Downloading New Relic Windows Infrastructure Agent"
+    $dl = Invoke-WebRequest -uri $infraFullUrl -outfile $infraFullPath
+    Write-Host $dl
+
+    Write-Host "Downloading New Relic .NET Framework Agent"
+    $dl = Invoke-WebRequest -uri $dotnetFullUrl -outfile $dotnetFullPath
     Write-Host $dl
 }
 
@@ -40,18 +49,34 @@ function install() {
     $arguments = @(
         "/qn"
         "/i"
-        $msiFullPath
+        $infraFullPath
         "GENERATE_CONFIG=true"
         "LICENSE_KEY=" + $env:NEW_RELIC_LICENSE_KEY
     )
-    Write-Host "Installing $($msiFile)"
+    Write-Host "Installing $($infraFile)"
     $process = Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments -Wait -PassThru
     if ($process.ExitCode -ne 0){
         Write-Host "Installation Failed: exit code $($process.ExitCode)"
         exit
     }
-    Write-Host "Installation Success"
-    Remove-Item -path $msiFullPath
+    Write-Host "Success installing Infrastructure Agent"
+    Remove-Item -path $infraFullPath
+
+    $arguments = @(
+        "/qb"
+        "/i"
+        $dotnetFullPath
+        "INSTALLEVEL=1"
+        "LICENSE_KEY=" + $env:NEW_RELIC_LICENSE_KEY
+    )
+    Write-Host "Installing $($dotnetFile)"
+    $process = Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments -Wait -PassThru
+    if ($process.ExitCode -ne 0){
+        Write-Host "Installation Failed: exit code $($process.ExitCode)"
+        exit
+    }
+    Write-Host "Success installing .NET Agent"
+    Remove-Item -path $dotnetFullPath
 }
 
 # Execute functions

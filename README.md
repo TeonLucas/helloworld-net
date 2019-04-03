@@ -20,7 +20,7 @@ Then run the script to download, install and configure the agent.  You will need
 & .\install-agent.ps1
 ```
 
-Finally, start the agent as follows:
+Finally, start the Infrastructure agent as follows:
 ```
 net start newrelic-infra
 ```
