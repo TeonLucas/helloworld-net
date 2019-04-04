@@ -11,11 +11,11 @@ copy newrelic.template.env newrelic.env
 
 Next edit `newrelic.env` and set the license key on the first line:
 ```
-NEW_RELIC_LICENSE_KEY=YOUR_LICENSE_KEY_HERE
+NEWRELIC_LICENSE_KEY=YOUR_LICENSE_KEY_HERE
 ```
 Alternatively you can set this environment variable and it will be used by the install script.
 
-Then run the script to download, install and configure the agent.  You will need to start PowerShell to run this.
+Then run the script to download, install and configure the agents.  You will need to start PowerShell to run this.
 ```
 & .\install-agent.ps1
 ```
