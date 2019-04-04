@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using NewRelic.Api.Agent;
+using newrelic = NewRelic.Api.Agent.NewRelic;
 
 namespace HelloWpfApp
 {
@@ -25,15 +14,18 @@ namespace HelloWpfApp
             InitializeComponent();
         }
 
+        [Transaction]
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             if (HelloButton.IsChecked == true)
             {
-                MessageBox.Show("Hello.");
+                MessageBox.Show("Hello!");
+                newrelic.AddCustomParameter("WpfAppButton","Hello");
             }
             else if (GoodbyeButton.IsChecked == true)
             {
-                MessageBox.Show("Goodbye.");
+                MessageBox.Show("Goodbye!");
+                newrelic.AddCustomParameter("WpfAppButton", "Goodbye");
             }
         }
     }

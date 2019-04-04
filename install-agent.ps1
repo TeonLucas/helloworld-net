@@ -3,8 +3,10 @@ $infraUrl = "https://download.newrelic.com/infrastructure_agent/windows/"
 $infraFile = "newrelic-infra.msi"
 $dotnetUrl = "https://download.newrelic.com/dot_net_agent/latest_release/"
 $dotnetFile = "NewRelicDotNetAgent_x64.msi"
-$dlPath = "c:\temp\"
+$dlPath = "C:\temp\"
 $envFile = "newrelic.env"
+$configFile = "newrelic.config"
+$configFullPath = "C:\ProgramData\New Relic\.NET Agent\" + $configFile
 
 $infraFullUrl = $infraUrl + $infraFile
 $infraFullPath = $dlPath + $infraFile
@@ -20,14 +22,14 @@ function set_env() {
         $var = $line.Split('=')
         [Environment]::SetEnvironmentVariable($var[0], $var[1], "Machine")
     }
-    if ([string]::IsNullOrEmpty($env:NEW_RELIC_LICENSE_KEY)) {
-        Write-Host "Env var NEW_RELIC_LICENSE_KEY must be set"
+    if ([string]::IsNullOrEmpty([Environment]::GetEnvironmentVariable("NEW_RELIC_LICENSE_KEY", "Machine"))) {
+        Write-Host "Machine Env var NEW_RELIC_LICENSE_KEY must be set"
         exit
     }
 }
 
 function is_admin() {
-    $IsAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] “Administrator”)
+    $IsAdmin = ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")
 
     if (!$IsAdmin) {
         Write-Host "This script should be run as Administrator"
@@ -37,12 +39,10 @@ function is_admin() {
 
 function download_files(){
     Write-Host "Downloading New Relic Windows Infrastructure Agent"
-    $dl = Invoke-WebRequest -uri $infraFullUrl -outfile $infraFullPath
-    Write-Host $dl
+    Invoke-WebRequest -uri $infraFullUrl -outfile $infraFullPath
 
     Write-Host "Downloading New Relic .NET Framework Agent"
-    $dl = Invoke-WebRequest -uri $dotnetFullUrl -outfile $dotnetFullPath
-    Write-Host $dl
+    Invoke-WebRequest -uri $dotnetFullUrl -outfile $dotnetFullPath
 }
 
 function install() {
@@ -51,7 +51,7 @@ function install() {
         "/i"
         $infraFullPath
         "GENERATE_CONFIG=true"
-        "LICENSE_KEY=" + $env:NEW_RELIC_LICENSE_KEY
+        "LICENSE_KEY=" + [Environment]::GetEnvironmentVariable("NEW_RELIC_LICENSE_KEY", "Machine")
     )
     Write-Host "Installing $($infraFile)"
     $process = Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments -Wait -PassThru
@@ -59,7 +59,7 @@ function install() {
         Write-Host "Installation Failed: exit code $($process.ExitCode)"
         exit
     }
-    Write-Host "Success installing Infrastructure Agent"
+    Write-Host "Success: Infrastructure Agent installed"
     Remove-Item -path $infraFullPath
 
     $arguments = @(
@@ -67,7 +67,8 @@ function install() {
         "/i"
         $dotnetFullPath
         "INSTALLEVEL=1"
-        "LICENSE_KEY=" + $env:NEW_RELIC_LICENSE_KEY
+        "ADDLOCAL=ApiFeature"
+        "LICENSE_KEY=" + [Environment]::GetEnvironmentVariable("NEW_RELIC_LICENSE_KEY", "Machine")
     )
     Write-Host "Installing $($dotnetFile)"
     $process = Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments -Wait -PassThru
@@ -75,8 +76,18 @@ function install() {
         Write-Host "Installation Failed: exit code $($process.ExitCode)"
         exit
     }
-    Write-Host "Success installing .NET Agent"
+    Write-Host "Success: .NET Agent installed"
     Remove-Item -path $dotnetFullPath
+}
+
+function edit_config {
+    $local = ".\" + $configFile
+    if (!(Test-Path -path $local)) {
+        Write-Host "Could not find .NET config file template $($local))"
+        exit
+    }
+    Write-Host "Updating .NET Agent config $($configFullPath)"
+    (Get-Content -path $local) -replace "YOUR_LICENSE_KEY_HERE", [Environment]::GetEnvironmentVariable("NEW_RELIC_LICENSE_KEY", "Machine") | Set-Content -path $configFullPath
 }
 
 # Execute functions
@@ -84,3 +95,4 @@ is_admin
 set_env
 download_files
 install
+edit_config
