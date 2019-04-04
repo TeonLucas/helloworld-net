@@ -1,7 +1,7 @@
 # helloworld-net
 Example app for .NET framework from the Microsoft [Hello World](https://docs.microsoft.com/en-us/visualstudio/get-started/csharp/tutorial-wpf) tutorial.
 
-## How to Configure monitoring
+## Configure monitoring
 This project assumes you are on a Windows machine.  It includes an install script for New Relic monitoring, for both Windows infrastructure and the .NET application.
 
 First copy the template to newrelic.env
@@ -15,6 +15,7 @@ NEW_RELIC_LICENSE_KEY=YOUR_LICENSE_KEY_HERE
 ```
 Alternatively you can set this environment variable and it will be used by the install script.
 
+## Install the Agents using PowerShell
 Then run the script to download, install and configure the agents.  You will need PowerShell to run this.
 ```
 & .\install-agent.ps1
@@ -29,7 +30,7 @@ Finally, start the Infrastructure agent as follows:
 net start newrelic-infra
 ```
 
-## How to Build the example app
+## Build the example app
 The subdirectory `HelloWpfApp` is a .NET application project which you can open with Visual Studio.  Once open, type Ctrl-B to build the executable.  You can then run the application as follows:
 ```
 .\HelloWpfAp\HelloWpfApp\bin\Release\HelloWpfApp.exe
