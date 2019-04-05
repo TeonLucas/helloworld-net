@@ -35,16 +35,17 @@ The subdirectory `HelloWpfApp` is a .NET application project which you can open 
 ```
 .\HelloWpfAp\HelloWpfApp\bin\Release\HelloWpfApp.exe
 ```
-Notice the directory `HelloWpfAp\HelloWpfApp\bin\Release` contains our Api agent DLL.  This library is needed for the custom instrumentation used in [Greetings.xaml.cs](https://github.com/DavidSantia/helloworld-net/blob/master/HelloWpfApp/HelloWpfApp/Greetings.xaml.cs):
-```
-newrelic.AddCustomParameter("WpfAppButton","Hello")
-```
 
 Select a radio button option and press the _Display_ button as shown below:
 ![Figure 1: App UI](https://github.com/DavidSantia/helloworld-net/blob/master/HelloWpfApp%20UI.png)
 
 * Each time you press _Display_, it starts a transaction event.
 * The radio button selection is reported as a custom attribute within that event.
+
+Notice the directory `HelloWpfAp\HelloWpfApp\bin\Release` contains the Api Agent DLL.  This library is needed for the custom instrumentation used in [Greetings.xaml.cs](https://github.com/DavidSantia/helloworld-net/blob/master/HelloWpfApp/HelloWpfApp/Greetings.xaml.cs):
+```
+newrelic.AddCustomParameter("WpfAppButton","Hello")
+```
 
 The logs for the .NET agent will be in `C:\ProgramData\New Relic\.NET Agent\Logs`, check for a pair of these as follows:
 
