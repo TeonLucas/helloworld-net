@@ -40,7 +40,11 @@ Notice the directory `HelloWpfAp\HelloWpfApp\bin\Release` contains our Api agent
 newrelic.AddCustomParameter("WpfAppButton","Hello")
 ```
 
-Each time you press the Display button on the app, it starts a transaction and reports the button selection as a custom attribute within that event.
+Select a radio button option and press the _Display_ button as shown below:
+![Figure 1: App UI](https://github.com/DavidSantia/helloworld-net/blob/master/HelloWpfApp%20UI.png)
+
+* Each time you press _Display_, it starts a transaction event.
+* The radio button selection is reported as a custom attribute within that event.
 
 The logs for the .NET agent will be in `C:\ProgramData\New Relic\.NET Agent\Logs`, check for a pair of these as follows:
 
